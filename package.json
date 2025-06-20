@@ -1,0 +1,22 @@
+{
+  "name": "chat-node",
+  "version": "1.0.0",
+  "description": "node for the chat application",
+  "main": "app.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Chandra7133/chat-node.git"
+  },
+  "keywords": [
+    "key"
+  ],
+  "author": "balaraju,chandra,vignesh,akhila,rajesh",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Chandra7133/chat-node/issues"
+  },
+  "homepage": "https://github.com/Chandra7133/chat-node#readme"
+}
