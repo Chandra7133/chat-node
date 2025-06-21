@@ -14,7 +14,7 @@ exports.login = async (req, res) => {
  try {
   const reqParams = req["body"] || {}
   const result = await loginMdl.login(reqParams)
-  res.status(result['status'] || SUCCESS_CODE).json({ "status": !result["status"], "msg": result['msg'] , "token" : result['token'] || "" })
+  res.status(result['status'] || SUCCESS_CODE).json({ "status": !result["status"], "msg": result['msg'], "data": result["data"], "token": result['token'] || "" })
  } catch (error) {
   res.status(SERVER_ERROR_CODE).json({ "status": false, "msg": SERVER_ERROR_MESSAGE })
  }
@@ -29,4 +29,3 @@ exports.forgetPassword = async (req, res) => {
   res.status(SERVER_ERROR_CODE).json({ "status": false, "msg": SERVER_ERROR_MESSAGE })
  }
 }
-
