@@ -2,10 +2,10 @@
 const path = require('path');
 require("dotenv").config();
 global.IS_PROD = process.env.IS_PROD || 0
-if (IS_PROD == 0) {
- const projectRootPath = path.join(process.cwd(), '../.env')
- require("dotenv").config({ path: `${projectRootPath}` })
-}
+// if (IS_PROD == 0) {
+//  const projectRootPath = path.join(process.cwd(), '../.env')
+//  require("dotenv").config({ path: `${projectRootPath}` })
+// }
 
 global.PORT = process.env.PORT
 global.WHITELIST_DOMAIN = process.env.WHITELIST_DOMAIN

@@ -2,10 +2,10 @@ const router = require("express").Router();
 const { check, validationResult } = require('express-validator');
 const loginCtrl = require("../../controllers/login")
 
-router.post("/sign-up",[
- check("username").isLength({ min: 7 }).withMessage('username must be at least 7 characters long'),
+router.post("/sign-up", [
+ check("username").isLength({ min: 6 }).withMessage('username must be at least 6 characters long'),
  check("email").isEmail().withMessage('Invalid email format'),
- check("password").isLength({ min: 7 }).withMessage('Password must be at least 7 characters long'),
+ check("password").isLength({ min: 6 }).withMessage('Password must be at least 6 characters long'),
 ], async (req, res, next) => {
  try {
   const errors = validationResult(req);
@@ -18,9 +18,9 @@ router.post("/sign-up",[
  }
 })
 
-router.post("/",[
+router.post("/", [
  check("email").isEmail().withMessage('Invalid email format'),
- check("password").isLength({ min: 7 }).withMessage('Password must be at least 7 characters long'),
+ check("password").isLength({ min: 1 }).withMessage('Invalid Password')
 ], async (req, res, next) => {
  try {
   const errors = validationResult(req);
@@ -33,9 +33,9 @@ router.post("/",[
  }
 })
 
-router.put("/",[
+router.put("/", [
  check("email").isEmail().withMessage('Invalid email format'),
- check("password").isLength({ min: 7 }).withMessage('Password must be at least 7 characters long'),
+ check("password").isLength({ min: 6 }).withMessage('Password must be at least 6 characters long')
 ], async (req, res, next) => {
  try {
   const errors = validationResult(req);
@@ -47,9 +47,5 @@ router.put("/",[
   res.status(SERVER_ERROR_CODE).json({ message: error.message });
  }
 })
-
-
-
-
 
 module.exports = router;
