@@ -3,11 +3,11 @@ const { mongoQuery, mongoObjId } = require("@cs7player/login-lib")
 exports.updateUser = async (reqParams) => {
  try {
   const updateObj = {}
-  if ("username" in reqParams) whr["username"] = updateObj["username"]
-  if ("gender_id" in reqParams) whr["gender_id"] = updateObj["gender_id"]
-  if ("gender_name" in reqParams) whr["gender_name"] = updateObj["gender_name"]
-  if ("about" in reqParams) whr["about"] = updateObj["about"]
-  if ("is_verified" in reqParams) whr["is_verified"] = updateObj["is_verified"]
+  if ("username" in reqParams) updateObj["username"] = reqParams["username"]
+  if ("gender_id" in reqParams) updateObj["gender_id"] = reqParams["gender_id"]
+  if ("gender_name" in reqParams) updateObj["gender_name"] = reqParams["gender_name"]
+  if ("about" in reqParams) updateObj["about"] = reqParams["about"]
+  if ("is_verified" in reqParams) updateObj["is_verified"] = reqParams["is_verified"]
   updateObj["updated_at"] = new Date()
   const whr = { "_id": mongoObjId(reqParams["user_id"]) }
   const result = await mongoQuery.updateOne(USERS, whr, updateObj)
