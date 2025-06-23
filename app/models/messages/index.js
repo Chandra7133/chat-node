@@ -25,7 +25,8 @@ exports.chat = async (reqParams) => {
       { $and: [{ "receiver_id": user_id }, { "sender_id": friend_id }] },
      ]
     }
-   }
+   },
+   { $sort: { created_at: -1 } }
   ]
   const result = await mongoQuery.getDetails(MESSAGES, pipeline)
   return result

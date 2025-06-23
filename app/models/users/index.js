@@ -71,3 +71,20 @@ exports.paging = async (reqParams) => {
   throw error
  }
 }
+
+exports.others = async (reqParams) => {
+ try {
+  let user_id = mongoObjId(reqParams['user_id']);
+  const userData = await mongoQuery.getDetails(FRIENDS, [{ $match: { user_id } }]);
+  const friends_list = userData[0]['friends']
+  let pipeline = [
+   { $match : {
+    _id : { $nin: friends_list }
+   }}
+  ]
+  const result = await mongoQuery.getDetails(USERS, pipeline)
+  return { "data": result, "count": result.length }
+ } catch (error) {
+  throw error
+ }
+}
