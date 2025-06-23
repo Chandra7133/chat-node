@@ -1,4 +1,4 @@
-const dbHelper = require("../../utils/db-helper")
+const mongoQuery = require("@cs7player/login-lib").mongoQuery;
 
 exports.getUsers = async (reqParams) => {
  try {
@@ -10,7 +10,7 @@ exports.getUsers = async (reqParams) => {
     }
    }
   ];
-  const result = await dbHelper.getDetails(USERS, isPassword ? [] : pipeline);
+  const result = await mongoQuery.getDetails(USERS, isPassword ? [] : pipeline);
   return result;
  } catch (error) {
   throw error;
@@ -31,7 +31,7 @@ exports.paging = async (reqParams) => {
     }
    });
   }
-  const result = await dbHelper.getDetails(USERS, pipeline);
+  const result = await mongoQuery.getDetails(USERS, pipeline);
   return { "data": result, "count": result.length };
  } catch (error) {
   throw error;
