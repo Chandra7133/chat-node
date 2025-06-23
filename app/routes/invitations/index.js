@@ -31,7 +31,7 @@ router.post("/sended", [
  }
 })
 
-router.put("/received", [
+router.post("/received", [
  check("user_id").isAlphanumeric().isLength({ min: 24 }).withMessage('Invalid user id'),
 ], async (req, res, next) => {
  try {

@@ -5,7 +5,7 @@ const invitations = require("./invitations")
 
 router.use("/login", login)
 router.use("/users", users)
-router.use("/invitations", invitations)
+router.use("/invite", invitations)
 
 router.get("/", (req, res) => {
  res.status(200).json({ message: "Welcome to the API" })

@@ -1,4 +1,4 @@
-const mongoQuery = require("@cs7player/login-lib").mongoQuery;
+const { mongoQuery, mongoObjId } = require("@cs7player/login-lib");
 const pbkdf = require("@cs7player/login-lib").pbkdf;
 const otp = require("@cs7player/login-lib").otp;
 const jwt = require("@cs7player/login-lib").jwt;
@@ -6,7 +6,8 @@ const otpJson = require("../../utils/otp.json");
 
 exports.invite = async (reqParams) => {
  try {
-  let { sender_id, receiver_id } = reqParams;
+  const sender_id = mongoObjId(reqParams['sender_id']);
+  const receiver_id = mongoObjId(reqParams['receiver_id']);
   created_at = new Date();
   const result = await mongoQuery.insertOne(INVITATIONS, { sender_id, receiver_id, created_at });
   return result || [];
@@ -17,8 +18,35 @@ exports.invite = async (reqParams) => {
 
 exports.sended = async (reqParams) => {
  try {
-  let { user_id } = reqParams;
-  let pipeline = [{ $match: { 'sender_id':user_id } }]
+  const user_id = mongoObjId(reqParams['user_id']);
+  let pipeline = [
+   { $match: { 'sender_id': user_id } },
+   {
+    $lookup: {
+     from: USERS,
+     localField: "receiver_id",
+     foreignField: "_id",
+     as: "joinedData"
+    }
+   },
+   {
+     $unwind: "$joinedData"
+   },{
+    $addFields:{
+     "user_id": "$_id",
+     "username":"$joinedData.username",
+     "gender_id": "$joinedData.gender_id"
+    }
+   },
+   {
+    $project: {
+     _id: 1,
+     "joinedData": 0,
+     "sender_id":0,
+     "receiver_id":0
+    }
+   }
+  ]
   const result = await mongoQuery.getDetails(INVITATIONS, pipeline);
   return result || [];
  } catch (error) {
@@ -28,8 +56,35 @@ exports.sended = async (reqParams) => {
 
 exports.received = async (reqParams) => {
  try {
-  let { user_id } = reqParams;
-  let pipeline = [{ $match: { 'receiver_id':user_id } }]
+  const user_id = mongoObjId(reqParams['user_id']);
+  let pipeline = [
+   { $match: { 'receiver_id': user_id } },
+   {
+    $lookup: {
+     from: USERS,
+     localField: "sender_id",
+     foreignField: "_id",
+     as: "joinedData"
+    }
+   },
+   {
+     $unwind: "$joinedData"
+   },{
+    $addFields:{
+     "user_id": "$_id",
+     "username":"$joinedData.username",
+     "gender_id": "$joinedData.gender_id"
+    }
+   },
+   {
+    $project: {
+     _id: 1,
+     "joinedData": 0,
+     "sender_id":0,
+     "receiver_id":0
+    }
+   }
+  ]
   const result = await mongoQuery.getDetails(INVITATIONS, pipeline);
   return result || [];
  } catch (error) {
@@ -43,7 +98,8 @@ exports.accept = async (reqParams) => {
   const data = await mongoQuery.getDetails(INVITATIONS, [{ $match: { _id } }]);
   let user_id = data[0]['receiver_id'];
   let friend_id = data[0]['sender_id'];
-  let result = await mongoQuery.updateOne(FRIENDS, { user_id }, { $push: { friends : friend_id } });
+  let result = await mongoQuery.updateOne(FRIENDS, { user_id }, { $push: { friends: friend_id } });
+  await mongoQuery.updateOne(FRIENDS, { friend_id }, { $push: { friends: user_id } });
   await mongoQuery.deleteOne(INVITATIONS, { _id });
   return result || [];
  } catch (error) {
