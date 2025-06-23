@@ -1,7 +1,7 @@
 const router = require("express").Router()
 const login = require("./login")
 const users = require("./users")
-const invitations = require("./invite")
+const invitations = require("./invitations")
 
 router.use("/login", login)
 router.use("/users", users)
