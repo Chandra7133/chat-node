@@ -19,4 +19,4 @@ exports.paging = async (req, res) => {
  } catch (error) {
   res.status(SERVER_ERROR_CODE).json({ status: false, msg: SERVER_ERROR_MESSAGE });
  }
-}
+} 
