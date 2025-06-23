@@ -22,8 +22,12 @@ exports.getUsers = async (reqParams) => {
   const whr = {}
   if ("user_id" in reqParams) whr["_id"] = mongoObjId(reqParams["user_id"])
   if ("email" in reqParams) whr["email"] = reqParams["email"]
+  let searchKey = "";
+  if ("username" in reqParams) searchKey = reqParams['username'].trim();
+  if (searchKey !== "") {
+   whr['username'] = new RegExp(searchKey, "i")
+  }
   const isNeedPwd = reqParams["is_need_password"] || 0
-
   const pipeline = [
    { $match: whr },
    { $addFields: { user_id: "$_id" } },
@@ -43,13 +47,18 @@ exports.getUsers = async (reqParams) => {
 
 exports.paging = async (reqParams) => {
  try {
-  const { page = 1, limit = 10, username, isPassword = true } = reqParams
+  const { page = 1, limit = 10, username, isNeedPwd = true } = reqParams
   const skip = (page - 1) * limit
+  let searchKey = "";
+  if ("username" in reqParams) searchKey = reqParams['username'].trim();
+  if (searchKey !== "") {
+   whr['username'] = new RegExp(searchKey, "i")
+  }
   const pipeline = [
    { $skip: skip },
    { $limit: limit }
   ]
-  if (!isPassword) {
+  if (!isNeedPwd) {
    pipeline.push({
     $project: {
      password: 0
