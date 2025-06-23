@@ -5,6 +5,7 @@ const loginCtrl = require("../../controllers/login")
 router.post("/sign-up", [
  check("username").isLength({ min: 6 }).withMessage("username must be at least 6 characters long"),
  check("email").isEmail().withMessage("Invalid email format"),
+ check("gender_id").isInt({ min: 1 }).withMessage("Invalid gender id"),
  check("password").isLength({ min: 6 }).withMessage("Password must be at least 6 characters long"),
 ], async (req, res, next) => {
  try {

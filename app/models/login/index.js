@@ -6,7 +6,7 @@ const otpJson = require("../../utils/otp.json")
 
 exports.signUp = async (reqParams) => {
  try {
-  let { username, email, password } = reqParams
+  let { username, email, gender_id, gender_name, password } = reqParams
   const usernameDetails = await checkUsername(username)
   if (usernameDetails.length > 0) return { "status": DUPLICATE_ENTRY_CODE, "msg": "Username already Exists!!!" }
   const emailDetails = await checkEmail(email)
@@ -14,8 +14,8 @@ exports.signUp = async (reqParams) => {
   password = await pbkdf.hashPassword(password)
   created_at = new Date()
   is_verified = 0
-  const result = await mongoQuery.insertOne(USERS, { username, email, password, is_verified, created_at })
-  const friends= await mongoQuery.insertOne(FRIENDS,{user_id:"",friends:[]})
+  const result = await mongoQuery.insertOne(USERS, { username, email, gender_id, gender_name, password, is_verified, created_at })
+  const friends = await mongoQuery.insertOne(FRIENDS, { user_id: "", friends: [] })
   // const otpResult = await otpSender({ username, email })
   // if(otpResult["status"]){
   // }else{
