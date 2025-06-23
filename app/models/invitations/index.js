@@ -71,7 +71,8 @@ exports.received = async (reqParams) => {
      $unwind: "$joinedData"
    },{
     $addFields:{
-     "user_id": "$_id",
+        "_id": "$_id",
+     "user_id": "$joinedData._id",
      "username":"$joinedData.username",
      "gender_id": "$joinedData.gender_id"
     }
@@ -94,12 +95,12 @@ exports.received = async (reqParams) => {
 
 exports.accept = async (reqParams) => {
  try {
-  let { _id } = reqParams;
+  const _id = mongoObjId(reqParams['_id']);
   const data = await mongoQuery.getDetails(INVITATIONS, [{ $match: { _id } }]);
-  let user_id = data[0]['receiver_id'];
-  let friend_id = data[0]['sender_id'];
-  let result = await mongoQuery.updateOne(FRIENDS, { user_id }, { $push: { friends: friend_id } });
-  await mongoQuery.updateOne(FRIENDS, { friend_id }, { $push: { friends: user_id } });
+  let user_id = mongoObjId(data[0]['receiver_id']);
+  let friend_id = mongoObjId(data[0]['sender_id']);
+  let result = await mongoQuery.updateOne(FRIENDS, { user_id }, {  friends: [friend_id]  });
+  await mongoQuery.updateOne(FRIENDS, { "user_id" :friend_id }, {  friends: [user_id] });
   await mongoQuery.deleteOne(INVITATIONS, { _id });
   return result || [];
  } catch (error) {
@@ -109,7 +110,7 @@ exports.accept = async (reqParams) => {
 
 exports.decline = async (reqParams) => {
  try {
-  let { _id } = reqParams;
+  let { _id } = mongoObjId(reqParams['_id']);
   let result = await mongoQuery.deleteOne(INVITATIONS, { _id });
   return result || [];
  } catch (error) {
