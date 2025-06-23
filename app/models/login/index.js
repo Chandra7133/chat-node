@@ -20,11 +20,11 @@ exports.signUp = async (reqParams) => {
   is_verfied = 0;
   const result = await mongoQuery.insertOne(USERS, { username, email, password, is_verfied, created_at });
   const otpResult = await otpSender({username,email})
-  if(otpResult['status']){
-   return result;
-  }else{
-   return { 'status': SERVICE_UNAVAILABLE_CODE, 'msg': SERVICE_UNAVAILABLE_MESSAGE}
-  }
+  // if(otpResult['status']){
+  // }else{
+  //  return { 'status': SERVICE_UNAVAILABLE_CODE, 'msg': SERVICE_UNAVAILABLE_MESSAGE}
+  // }
+  return result;
  } catch (error) {
   throw error
  }
@@ -78,9 +78,12 @@ exports.login = async (reqParams) => {
    return { "status": AUTH_ERROR_CODE, "msg": "Incorrect password" }
   }
   delete userData[0]["password"]
-  const tokenRes = jwt.generateToken(userData[0])
-  if (tokenRes.status) return { "msg": "Login successful", "data": userData[0], "token": tokenRes["token"] };
-  else return { "msg": tokenRes['msg'], "status": tokenRes["status_code"] };
+  const tokenRes = await jwt.generateToken(userData[0])
+  if (tokenRes){
+   return { "msg": "Login successful", "data": userData[0], "token": tokenRes };
+  } else {
+   return { "msg": tokenRes['msg'], "status": tokenRes["status_code"] };
+  }
  } catch (error) {
   throw error
  }

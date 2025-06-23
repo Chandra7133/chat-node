@@ -1,6 +1,5 @@
 global.USERS = "users"
-global.CONNECTIONS = "connections"
-
+global.INVITATIONS = "invitations"
 
 global.TIMEZONE = "Asia/Kolkata"
 global.USER_ID_KEY = "user_id"
