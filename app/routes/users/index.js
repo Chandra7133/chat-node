@@ -2,7 +2,7 @@ const router = require("express").Router()
 const { check, validationResult } = require('express-validator')
 const usersCtrl = require("../../controllers/users")
 
-router.post("/get-users", [], (req, res) => {
+router.post("/details", [], (req, res) => {
  try {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {

@@ -1,38 +1,30 @@
-require("./app/utils/config");
-require("./app/utils/constants");
-const { authCheck } = require("./app/middleware/auth");
-const { connectDB } = require("./app/mongoose")
-const cors = require("cors");
+const loginLib = require("@cs7player/login-lib");
 const express = require("express");
+const cors = require("cors");
 const app = express();
-const whiteListDomains = WHITELIST_DOMAIN.split(",")
+require("./app/utils/constants");
+const allow_origns = ALLOW_ORIGNS
 const corsOptions = {
  origin: (origin, callback) => {
-  if (!origin || whiteListDomains.includes(origin)) {
+  if (!origin || allow_origns.includes(origin) || IS_ALLOW_ORIGN == 1) {
    callback(null, true);
   } else {
    callback(new Error("Not allowed by CORS"));
   }
  },
- // credentials: true,
- // optionsSuccessStatus: 200,
- // methods: ["GET", "POST", "PUT", "DELETE"],
- // allowedHeaders: ["Content-Type", "Authorization"],
- // exposedHeaders: ["Content-Type", "Authorization"],
 };
 app.use(cors(corsOptions));
-app.use(express.json()); // For JSON payloads
+app.use(express.json());
+app.use(loginLib.jwt.verifyToken);
+const routes = require("./app/routes");
+app.use(routes);
 app.use(express.urlencoded({ extended: true })); // For form data
 // middleware
-app.use(authCheck)
-const router = require("./app/routers"); // Routes
-app.use("/", router);
-const port = process.env.PORT || 3000;
-app.listen(port, async () => {
+app.listen(PORT, async () => {
  try {
   // Await DB connection setup
-  await connectDB();
-  console.log(`Server is running on port ${port}`);
+  await loginLib.mongoConnection();;
+  console.log(`Server is running on port ${PORT}`);
  } catch (err) {
   console.error("Failed to connect to DB:", err);
   process.exit(1); // Exit the app if DB connection fails
