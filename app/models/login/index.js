@@ -6,7 +6,7 @@ const otpJson = require("../../utils/otp.json")
 
 exports.signUp = async (reqParams) => {
  try {
-  const { username, email, password } = reqParams
+  let { username, email, password } = reqParams
   const usernameDetails = await checkUsername(username)
   if (usernameDetails.length > 0) return { "status": DUPLICATE_ENTRY_CODE, "msg": "Username already Exists!!!" }
   const emailDetails = await checkEmail(email)
@@ -29,7 +29,7 @@ exports.signUp = async (reqParams) => {
 
 exports.forgetPassword = async (reqParams) => {
  try {
-  const { email, password } = reqParams
+  let { email, password } = reqParams
   const userData = await checkEmail(email)
   if (userData.length == 0) return { "status": NOT_FOUND_CODE, "msg": "No account found!!!" }
   const _id = userData[0]["_id"]
