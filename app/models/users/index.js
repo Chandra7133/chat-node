@@ -80,7 +80,12 @@ exports.others = async (reqParams) => {
   let pipeline = [
    { $match : {
     _id : { $nin: friends_list }
-   }}
+   }},
+   {
+    $project : {
+     password : 0
+    }
+   }
   ]
   const result = await mongoQuery.getDetails(USERS, pipeline)
   return { "data": result, "count": result.length }
