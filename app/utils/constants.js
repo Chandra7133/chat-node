@@ -1,4 +1,5 @@
 global.USERS = "users"
+global.FRIENDS = "friends"
 global.INVITATIONS = "invitations"
 
 global.TIMEZONE = "Asia/Kolkata"
