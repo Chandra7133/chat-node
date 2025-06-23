@@ -15,7 +15,7 @@ exports.signUp = async (reqParams) => {
   created_at = new Date()
   is_verified = 0
   const result = await mongoQuery.insertOne(USERS, { username, email, gender_id, gender_name, password, is_verified, created_at })
-  const friends = await mongoQuery.insertOne(FRIENDS, { user_id: "", friends: [] })
+  const friends = await mongoQuery.insertOne(FRIENDS, { user_id: result["insertedId"], friends: [] })
   // const otpResult = await otpSender({ username, email })
   // if(otpResult["status"]){
   // }else{
