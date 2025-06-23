@@ -10,6 +10,7 @@ exports.getUsers = async (req, res) => {
   res.status(SERVER_ERROR_CODE).json({ status: false, msg: SERVER_ERROR_MESSAGE });
  }
 }
+
 exports.paging = async (req, res) => {
  try {
   const reqParams = req['body'] || {};
