@@ -1,11 +1,13 @@
 const router = require("express").Router()
 const login = require("./login")
-const users = require("./users")
-const invitations = require("./invitations")
+const users = require('./users')
+const msgs = require("./messages")
+const invitations = require('./invitations')
 
 router.use("/login", login)
 router.use("/users", users)
 router.use("/invite", invitations)
+router.use('/msgs', msgs)
 
 router.get("/", (req, res) => {
  res.status(200).json({ message: "Welcome to the API" })

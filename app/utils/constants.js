@@ -1,6 +1,7 @@
 global.USERS = "users"
 global.FRIENDS = "friends"
 global.INVITATIONS = "invitations"
+global.MESSAGES = "messages"
 
 global.TIMEZONE = "Asia/Kolkata"
 global.USER_ID_KEY = "user_id"
