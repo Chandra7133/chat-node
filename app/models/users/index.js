@@ -100,12 +100,12 @@ exports.others = async (reqParams) => {
   const sentMap = new Map(sendedInviteData.map(item => [item.receiver_id.toString(), item.req_id]))
   const receiveMap = new Map(receivedInviteData.map(item => [item.sender_id.toString(), item.req_id]))
   result.forEach(user => {
-   user["req_flag"] = 0;
+   user["req_flag"] = 0
    const sendId = sentMap.get(user.user_id.toString())
    if (sendId) {
     user["req_flag"] = 1
     user["req_id"] = sendId
-   } 
+   }
    const receiveId = receiveMap.get(user.user_id.toString())
    if (receiveId) {
     user["req_flag"] = 2
@@ -120,29 +120,24 @@ exports.others = async (reqParams) => {
 
 exports.friendsList = async (reqParams) => {
  try {
-  const user_id = mongoObjId(reqParams['user_id']);
-  const username = reqParams['search_text'] || "";
+  const user_id = mongoObjId(reqParams["user_id"])
+  const username = reqParams["search_text"] || ""
 
-  const friends_arr = await mongoQuery.getDetails( FRIENDS, [  { $match: { user_id } }, {$project :{"_id": 0, "user_id":0}}] );
-  if (!friends_arr.length) {
-   return { data: [], count: 0 };
-  }
-  const matchedFriendIds = friends_arr[0].friends || [];
-  const matchQuery = { _id: { $in: matchedFriendIds } };
+  const friends_arr = await mongoQuery.getDetails(FRIENDS, [{ $match: { user_id } }, { $project: { "_id": 0, "user_id": 0 } }])
+  if (!friends_arr.length) return { data: [], count: 0 }
 
-  if (username) {
-   matchQuery.username = { $regex: username, $options: "i" };
-  }
+  const matchedFriendIds = friends_arr[0]?.friends || []
+  const matchQuery = { _id: { $in: matchedFriendIds } }
+  if (username) matchQuery.username = { $regex: username, $options: "i" }
 
   const pipeline = [
-   {  $match: matchQuery },
-   {  $project: {  password: 0, is_verified: 0  }  },
-   {  $sort: { username: 1 } }
-  ];
+   { $match: matchQuery },
+   { $project: { password: 0, is_verified: 0 } },
+   { $sort: { username: 1 } }
+  ]
 
-  const result = await mongoQuery.getDetails(USERS, pipeline);
-  return {  data: result, count: result.length };
-
+  const result = await mongoQuery.getDetails(USERS, pipeline)
+  return { data: result, count: result.length }
  } catch (error) {
   throw error
  }

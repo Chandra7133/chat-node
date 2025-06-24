@@ -46,7 +46,7 @@ router.post("/others", [
  }
 })
 
-router.post("/friends_list", [
+router.post("/friends", [
  check("user_id").isAlphanumeric().isLength({ min: 24 }).withMessage('Invalid user id'),
 ], (req, res) => {
  try {
