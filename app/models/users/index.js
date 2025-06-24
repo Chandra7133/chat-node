@@ -75,16 +75,25 @@ exports.paging = async (reqParams) => {
 exports.others = async (reqParams) => {
  try {
   let user_id = mongoObjId(reqParams['user_id']);
+  let username = reqParams['search_text'] || "";
   const userData = await mongoQuery.getDetails(FRIENDS, [{ $match: { user_id } }]);
   const friends_list = userData[0]['friends']
+  friends_list.push(user_id);
   let pipeline = [
-   { $match : {
-    _id : { $nin: friends_list }
-   }},
    {
-    $project : {
-     password : 0
+    $match: {
+     _id: { $nin: friends_list },
+     username: { $regex: username, $options: "i" }
     }
+   },
+   {
+    $project: {
+     password: 0,
+     is_verified: 0
+    }
+   },
+   {
+    $sort: { username: 1 }
    }
   ]
   const result = await mongoQuery.getDetails(USERS, pipeline)
