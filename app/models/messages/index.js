@@ -5,8 +5,9 @@ exports.messages = async (reqParams) => {
   const sender_id = mongoObjId(reqParams['sender_id']);
   const receiver_id = mongoObjId(reqParams['receiver_id']);
   const msg = reqParams.msg;
+  const is_seen = 0;
   const created_at = new Date();
-  const result = await mongoQuery.insertOne(MESSAGES, { sender_id, receiver_id, msg, created_at })
+  const result = await mongoQuery.insertOne(MESSAGES, { sender_id, receiver_id, msg, is_seen, created_at })
   return result
  } catch (error) {
   throw error
