@@ -5,7 +5,7 @@ const msgCtrl = require("../../controllers/messages")
 router.post("/msg", [
  check("sender_id").isAlphanumeric().isLength({ min: 24 }).withMessage('Invalid sender id'),
  check("receiver_id").isAlphanumeric().isLength({ min: 24 }).withMessage('Invalid receiver id'),
- check("msg").isAlphanumeric().isLength({ min: 1 }).withMessage('Invalid Message')
+ check("msg").trim().isString().isLength({ min: 1 }).withMessage('Invalid Message')
  ], async (req, res, next) => {
  try {
   const errors = validationResult(req);
