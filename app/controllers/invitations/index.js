@@ -54,7 +54,7 @@ exports.unfriend = async (req, res) => {
  try {
   const reqParams = req["body"] || {}
   const result = await invitationsMdl.unfriend(reqParams)
-  res.status(SUCCESS_CODE).json({ "status": true, "data": result })
+  res.status(SUCCESS_CODE).json({ "status": true, "msg": "Removed friend successfully." })
  } catch (error) {
   res.status(SERVER_ERROR_CODE).json({ "status": false, "msg": SERVER_ERROR_MESSAGE })
  }
