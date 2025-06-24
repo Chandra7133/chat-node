@@ -46,4 +46,16 @@ router.post("/others", [
  }
 })
 
+router.post("/friends_list", [
+ check("user_id").isAlphanumeric().isLength({ min: 24 }).withMessage('Invalid user id'),
+], (req, res) => {
+ try {
+  const errors = validationResult(req)
+  if (!errors.isEmpty()) return res.status(VALIDATION_ERROR_CODE).json({ errors: errors.array() })
+  usersCtrl.friendsList(req, res)
+ } catch (error) {
+  res.status(SERVER_ERROR_CODE).json({ message: error.message })
+ }
+})
+
 module.exports = router

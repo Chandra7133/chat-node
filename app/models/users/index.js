@@ -93,3 +93,33 @@ exports.others = async (reqParams) => {
   throw error
  }
 }
+
+exports.friendsList = async (reqParams) => {
+ try {
+  const user_id = mongoObjId(reqParams['user_id']);
+  const username = reqParams['search_text'] || "";
+
+  const friends_arr = await mongoQuery.getDetails( FRIENDS, [  { $match: { user_id } }, {$project :{"_id": 0, "user_id":0}}] );
+  if (!friends_arr.length) {
+   return { data: [], count: 0 };
+  }
+  const matchedFriendIds = friends_arr[0].friends || [];
+  const matchQuery = { _id: { $in: matchedFriendIds } };
+
+  if (username) {
+   matchQuery.username = { $regex: username, $options: "i" };
+  }
+
+  const pipeline = [
+   {  $match: matchQuery },
+   {  $project: {  password: 0, is_verified: 0  }  },
+   {  $sort: { username: 1 } }
+  ];
+
+  const result = await mongoQuery.getDetails(USERS, pipeline);
+  return {  data: result, count: result.length };
+
+ } catch (error) {
+  throw error
+ }
+}
