@@ -91,13 +91,26 @@ exports.others = async (reqParams) => {
   ]
   const sendedInviteData = await mongoQuery.getDetails(INVITATIONS, pipeline2)
 
+  const pipeline3 = [
+   { $match: { receiver_id: user_id } },
+   { $project: { _id: 0, req_id: "$_id", sender_id: 1 } }
+  ]
+  const receivedInviteData = await mongoQuery.getDetails(INVITATIONS, pipeline3)
+
   const sentMap = new Map(sendedInviteData.map(item => [item.receiver_id.toString(), item.req_id]))
+  const receiveMap = new Map(receivedInviteData.map(item => [item.sender_id.toString(), item.req_id]))
   result.forEach(user => {
-   const reqId = sentMap.get(user.user_id.toString())
-   if (reqId) {
-    user["is_sended"] = 1
-    user["req_id"] = reqId
-   } else user["is_sended"] = 0
+   user["req_flag"] = 0;
+   const sendId = sentMap.get(user.user_id.toString())
+   if (sendId) {
+    user["req_flag"] = 1
+    user["req_id"] = sendId
+   } 
+   const receiveId = receiveMap.get(user.user_id.toString())
+   if (receiveId) {
+    user["req_flag"] = 2
+    user["req_id"] = receiveId
+   }
   })
   return { "data": result, "count": result.length }
  } catch (error) {
