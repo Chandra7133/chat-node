@@ -1,16 +1,12 @@
-const { mongoQuery, mongoObjId } = require("@cs7player/login-lib");
-const pbkdf = require("@cs7player/login-lib").pbkdf;
-const otp = require("@cs7player/login-lib").otp;
-const jwt = require("@cs7player/login-lib").jwt;
-const otpJson = require("../../utils/otp.json");
+const { mongoQuery, mongoObjId } = require("@cs7player/login-lib")
 
 exports.invite = async (reqParams) => {
  try {
-  const sender_id = mongoObjId(reqParams['sender_id']);
-  const receiver_id = mongoObjId(reqParams['receiver_id']);
-  created_at = new Date();
-  const result = await mongoQuery.insertOne(INVITATIONS, { sender_id, receiver_id, created_at });
-  return result || [];
+  const sender_id = mongoObjId(reqParams["sender_id"])
+  const receiver_id = mongoObjId(reqParams["receiver_id"])
+  created_at = new Date()
+  const result = await mongoQuery.insertOne(INVITATIONS, { sender_id, receiver_id, created_at })
+  return result || []
  } catch (error) {
   throw error
  }
@@ -18,9 +14,9 @@ exports.invite = async (reqParams) => {
 
 exports.sended = async (reqParams) => {
  try {
-  const user_id = mongoObjId(reqParams['user_id']);
-  let pipeline = [
-   { $match: { 'sender_id': user_id } },
+  const user_id = mongoObjId(reqParams["user_id"])
+  const pipeline = [
+   { $match: { "sender_id": user_id } },
    {
     $lookup: {
      from: USERS,
@@ -30,25 +26,25 @@ exports.sended = async (reqParams) => {
     }
    },
    {
-     $unwind: "$joinedData"
-   },{
-    $addFields:{
+    $unwind: "$joinedData"
+   }, {
+    $addFields: {
      "user_id": "$_id",
-     "username":"$joinedData.username",
+     "username": "$joinedData.username",
      "gender_id": "$joinedData.gender_id"
     }
    },
    {
     $project: {
-     _id: 1,
+     "_id": 1,
      "joinedData": 0,
-     "sender_id":0,
-     "receiver_id":0
+     "sender_id": 0,
+     "receiver_id": 0
     }
    }
   ]
-  const result = await mongoQuery.getDetails(INVITATIONS, pipeline);
-  return result || [];
+  const result = await mongoQuery.getDetails(INVITATIONS, pipeline)
+  return result || []
  } catch (error) {
   throw error
  }
@@ -56,9 +52,9 @@ exports.sended = async (reqParams) => {
 
 exports.received = async (reqParams) => {
  try {
-  const user_id = mongoObjId(reqParams['user_id']);
-  let pipeline = [
-   { $match: { 'receiver_id': user_id } },
+  const user_id = mongoObjId(reqParams["user_id"])
+  const pipeline = [
+   { $match: { "receiver_id": user_id } },
    {
     $lookup: {
      from: USERS,
@@ -68,26 +64,26 @@ exports.received = async (reqParams) => {
     }
    },
    {
-     $unwind: "$joinedData"
-   },{
-    $addFields:{
-        "_id": "$_id",
+    $unwind: "$joinedData"
+   }, {
+    $addFields: {
+     "_id": "$_id",
      "user_id": "$joinedData._id",
-     "username":"$joinedData.username",
+     "username": "$joinedData.username",
      "gender_id": "$joinedData.gender_id"
     }
    },
    {
     $project: {
-     _id: 1,
+     "_id": 1,
      "joinedData": 0,
-     "sender_id":0,
-     "receiver_id":0
+     "sender_id": 0,
+     "receiver_id": 0
     }
    }
   ]
-  const result = await mongoQuery.getDetails(INVITATIONS, pipeline);
-  return result || [];
+  const result = await mongoQuery.getDetails(INVITATIONS, pipeline)
+  return result || []
  } catch (error) {
   throw error
  }
@@ -95,14 +91,14 @@ exports.received = async (reqParams) => {
 
 exports.accept = async (reqParams) => {
  try {
-  const _id = mongoObjId(reqParams['_id']);
-  const data = await mongoQuery.getDetails(INVITATIONS, [{ $match: { _id } }]);
-  let user_id = mongoObjId(data[0]['receiver_id']);
-  let friend_id = mongoObjId(data[0]['sender_id']);
-  let result = await mongoQuery.updateOne(FRIENDS, { user_id }, {  $addToSet: { friends: friend_id }  });
-  await mongoQuery.updateOne(FRIENDS, { "user_id" :friend_id }, {  $addToSet: { friends: friend_id } });
-  await mongoQuery.deleteOne(INVITATIONS, { _id });
-  return result || [];
+  const _id = mongoObjId(reqParams["_id"])
+  const data = await mongoQuery.getDetails(INVITATIONS, [{ $match: { _id } }])
+  const user_id = mongoObjId(data[0]["receiver_id"])
+  const friend_id = mongoObjId(data[0]["sender_id"])
+  const result = await mongoQuery.updateOne(FRIENDS, { user_id }, { $addToSet: { friends: friend_id } })
+  await mongoQuery.updateOne(FRIENDS, { "user_id": friend_id }, { $addToSet: { friends: friend_id } })
+  await mongoQuery.deleteOne(INVITATIONS, { _id })
+  return result || []
  } catch (error) {
   throw error
  }
@@ -110,9 +106,9 @@ exports.accept = async (reqParams) => {
 
 exports.decline = async (reqParams) => {
  try {
-  let { _id } = mongoObjId(reqParams['_id']);
-  let result = await mongoQuery.deleteOne(INVITATIONS, { _id });
-  return result || [];
+  const _id = mongoObjId(reqParams["_id"])
+  const result = await mongoQuery.deleteOne(INVITATIONS, { _id })
+  return result || []
  } catch (error) {
   throw error
  }
@@ -120,11 +116,11 @@ exports.decline = async (reqParams) => {
 
 exports.unfriend = async (reqParams) => {
  try {
-  let user_id = mongoObjId(reqParams['user_id']);
-  let friend_id = mongoObjId(reqParams['friend_id']);
-  let result = await mongoQuery.updateOne(FRIENDS, { user_id }, {  $pull: { friends: friend_id }  }, 0);
-  await mongoQuery.updateOne(FRIENDS, { friend_id }, {  $pull: { friends: user_id }  }, 0);
-  return result || [];
+  const user_id = mongoObjId(reqParams["user_id"])
+  const friend_id = mongoObjId(reqParams["friend_id"])
+  const result = await mongoQuery.updateOne(FRIENDS, { user_id }, { $pull: { friends: friend_id } }, 0)
+  await mongoQuery.updateOne(FRIENDS, { user_id: friend_id }, { $pull: { friends: user_id } }, 0)
+  return result || []
  } catch (error) {
   throw error
  }

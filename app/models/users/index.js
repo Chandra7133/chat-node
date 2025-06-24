@@ -132,7 +132,8 @@ exports.friendsList = async (reqParams) => {
 
   const pipeline = [
    { $match: matchQuery },
-   { $project: { password: 0, is_verified: 0 } },
+   { $addFields: { user_id: "$_id" } },
+   { $project: { _id: 0, password: 0, is_verified: 0, email: 0 } },
    { $sort: { username: 1 } }
   ]
 
