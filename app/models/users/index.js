@@ -22,21 +22,15 @@ exports.getUsers = async (reqParams) => {
   const whr = {}
   if ("user_id" in reqParams) whr["_id"] = mongoObjId(reqParams["user_id"])
   if ("email" in reqParams) whr["email"] = reqParams["email"]
-  let searchKey = "";
-  if ("username" in reqParams) searchKey = reqParams['username'].trim();
-  if (searchKey !== "") {
-   whr['username'] = new RegExp(searchKey, "i")
-  }
+  let searchKey = ""
+  if ("username" in reqParams) searchKey = reqParams["username"].trim()
+  if (searchKey !== "") whr["username"] = new RegExp(searchKey, "i")
   const isNeedPwd = reqParams["is_need_password"] || 0
+
   const pipeline = [
    { $match: whr },
    { $addFields: { user_id: "$_id" } },
-   {
-    $project: {
-     _id: 0,
-     password: 0
-    }
-   }
+   { $project: { _id: 0, password: 0 } }
   ]
   const result = await mongoQuery.getDetails(USERS, pipeline)
   return result
@@ -49,22 +43,13 @@ exports.paging = async (reqParams) => {
  try {
   const { page = 1, limit = 10, username, isNeedPwd = true } = reqParams
   const skip = (page - 1) * limit
-  let searchKey = "";
-  if ("username" in reqParams) searchKey = reqParams['username'].trim();
-  if (searchKey !== "") {
-   whr['username'] = new RegExp(searchKey, "i")
-  }
-  const pipeline = [
-   { $skip: skip },
-   { $limit: limit }
-  ]
-  if (!isNeedPwd) {
-   pipeline.push({
-    $project: {
-     password: 0
-    }
-   })
-  }
+  let searchKey = ""
+  if ("username" in reqParams) searchKey = reqParams["username"].trim()
+  if (searchKey !== "") whr["username"] = new RegExp(searchKey, "i")
+
+  const pipeline = [{ $skip: skip }, { $limit: limit }]
+  if (!isNeedPwd) pipeline.push({ $project: { password: 0 } })
+
   const result = await mongoQuery.getDetails(USERS, pipeline)
   return { "data": result, "count": result.length }
  } catch (error) {
@@ -74,41 +59,31 @@ exports.paging = async (reqParams) => {
 
 exports.others = async (reqParams) => {
  try {
-  let user_id = mongoObjId(reqParams['user_id']);
-  let username = reqParams['search_text'] || "";
-  const userData = await mongoQuery.getDetails(FRIENDS, [{ $match: { user_id } }]);
-  const friends_list = userData[0]['friends']
-  friends_list.push(user_id);
-  let pipeline = [
-   {
-    $match: {
-     _id: { $nin: friends_list },
-     username: { $regex: username, $options: "i" }
-    }
-   },
-   {
-    $project: {
-     password: 0,
-     is_verified: 0
-    }
-   },
-   {
-    $sort: { username: 1 }
-   }
+  const user_id = mongoObjId(reqParams["user_id"])
+  const username = reqParams["search_text"] || ""
+
+  const userData = await mongoQuery.getDetails(FRIENDS, [{ $match: { user_id } }])
+  const friends_list = userData[0]["friends"]
+  friends_list.push(user_id)
+
+  const pipeline = [
+   { $match: { _id: { $nin: friends_list }, username: { $regex: username, $options: "i" } } },
+   { $addFields: { user_id: "$_id" } },
+   { $project: { _id: 0, password: 0, is_verified: 0 } },
+   { $sort: { username: 1 } }
   ]
   const result = await mongoQuery.getDetails(USERS, pipeline)
-  let pipeline2 = [
+
+  const pipeline2 = [
    { $match: { sender_id: user_id } },
-   { $project: { _id: 1,receiver_id:1 } }
+   { $project: { _id: 1, receiver_id: 1 } }
   ]
-  let sendedInvite = await mongoQuery.getDetails(INVITATIONS, pipeline2);
-  const idsArray = sendedInvite.map(doc => doc.receiver_id);
-  result.map(obj=>{
-   obj['is_sended'] = 0;
-   if(idsArray.some(id => id.equals(obj["_id"]))){
-    obj['is_sended'] = 1;
-   }
-  });
+  const sendedInvite = await mongoQuery.getDetails(INVITATIONS, pipeline2)
+  const idsArray = sendedInvite.map(doc => doc.receiver_id)
+  result.forEach(obj => {
+   obj["is_sended"] = 0
+   if (idsArray.some(id => id.equals(obj["user_id"]))) obj["is_sended"] = 1
+  })
   return { "data": result, "count": result.length }
  } catch (error) {
   throw error
