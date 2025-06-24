@@ -34,7 +34,7 @@ exports.accept = async (req, res) => {
  try {
   const reqParams = req["body"] || {}
   const result = await invitationsMdl.accept(reqParams)
-  res.status(SUCCESS_CODE).json({ "status": true, "data": result })
+  res.status(result["status"] || SUCCESS_CODE).json({ "status": result["acknowledged"] || false, "msg": result["msg"] || "Request accepted successfully." })
  } catch (error) {
   res.status(SERVER_ERROR_CODE).json({ "status": false, "msg": SERVER_ERROR_MESSAGE })
  }
@@ -44,7 +44,7 @@ exports.decline = async (req, res) => {
  try {
   const reqParams = req["body"] || {}
   const result = await invitationsMdl.decline(reqParams)
-  res.status(SUCCESS_CODE).json({ "status": true, "data": result })
+  res.status(result["status"] || SUCCESS_CODE).json({ "status": result["acknowledged"] || false, "msg": result["msg"] || "Request rejected successfully." })
  } catch (error) {
   res.status(SERVER_ERROR_CODE).json({ "status": false, "msg": SERVER_ERROR_MESSAGE })
  }
