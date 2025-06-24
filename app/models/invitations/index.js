@@ -99,8 +99,8 @@ exports.accept = async (reqParams) => {
   const data = await mongoQuery.getDetails(INVITATIONS, [{ $match: { _id } }]);
   let user_id = mongoObjId(data[0]['receiver_id']);
   let friend_id = mongoObjId(data[0]['sender_id']);
-  let result = await mongoQuery.updateOne(FRIENDS, { user_id }, {  friends: [friend_id]  });
-  await mongoQuery.updateOne(FRIENDS, { "user_id" :friend_id }, {  friends: [user_id] });
+  let result = await mongoQuery.updateOne(FRIENDS, { user_id }, {  $addToSet: { friends: friend_id }  });
+  await mongoQuery.updateOne(FRIENDS, { "user_id" :friend_id }, {  $addToSet: { friends: friend_id } });
   await mongoQuery.deleteOne(INVITATIONS, { _id });
   return result || [];
  } catch (error) {
@@ -112,6 +112,18 @@ exports.decline = async (reqParams) => {
  try {
   let { _id } = mongoObjId(reqParams['_id']);
   let result = await mongoQuery.deleteOne(INVITATIONS, { _id });
+  return result || [];
+ } catch (error) {
+  throw error
+ }
+}
+
+exports.unfriend = async (reqParams) => {
+ try {
+  let user_id = mongoObjId(reqParams['user_id']);
+  let friend_id = mongoObjId(reqParams['friend_id']);
+  let result = await mongoQuery.updateOne(FRIENDS, { user_id }, {  $pull: { friends: friend_id }  }, 0);
+  await mongoQuery.updateOne(FRIENDS, { friend_id }, {  $pull: { friends: user_id }  }, 0);
   return result || [];
  } catch (error) {
   throw error

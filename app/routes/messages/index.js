@@ -19,8 +19,8 @@ router.post("/msg", [
 })
 
 router.post("/chat", [
- check("user_id").isAlphanumeric().isLength({ min: 24 }).withMessage('Invalid sender id'),
- check("friend_id").isAlphanumeric().isLength({ min: 24 }).withMessage('Invalid receiver id')
+ check("user_id").isAlphanumeric().isLength({ min: 24 }).withMessage('Invalid user id'),
+ check("friend_id").isAlphanumeric().isLength({ min: 24 }).withMessage('Invalid friend id')
  ], async (req, res, next) => {
  try {
   const errors = validationResult(req);

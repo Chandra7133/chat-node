@@ -73,4 +73,19 @@ router.post("/decline", [
  }
 })
 
+router.post("/unfriend", [
+ check("user_id").isAlphanumeric().isLength({ min: 24 }).withMessage('Invalid user id'),
+ check("friend_id").isAlphanumeric().isLength({ min: 24 }).withMessage('Invalid friend id')
+], async (req, res, next) => {
+ try {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+   return res.status(VALIDATION_ERROR_CODE).json({ errors: errors.array() });
+  }
+  invitationsCtrl.unfriend(req, res)
+ } catch (error) {
+  res.status(SERVER_ERROR_CODE).json({ message: error.message });
+ }
+})
+
 module.exports = router;
