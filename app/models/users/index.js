@@ -97,6 +97,18 @@ exports.others = async (reqParams) => {
    }
   ]
   const result = await mongoQuery.getDetails(USERS, pipeline)
+  let pipeline2 = [
+   { $match: { sender_id: user_id } },
+   { $project: { _id: 1,receiver_id:1 } }
+  ]
+  let sendedInvite = await mongoQuery.getDetails(INVITATIONS, pipeline2);
+  const idsArray = sendedInvite.map(doc => doc.receiver_id);
+  result.map(obj=>{
+   obj['is_sended'] = 0;
+   if(idsArray.some(id => id.equals(obj["_id"]))){
+    obj['is_sended'] = 1;
+   }
+  });
   return { "data": result, "count": result.length }
  } catch (error) {
   throw error
