@@ -4,6 +4,8 @@ exports.updateUser = async (reqParams) => {
  try {
   const updateObj = {}
   if ("username" in reqParams) updateObj["username"] = reqParams["username"]
+  const usernameDetails = await checkUsername(reqParams["username"])
+  if (usernameDetails.length > 0) return { "status": DUPLICATE_ENTRY_CODE, "msg": "Username already Exists!!!" }
   if ("gender_id" in reqParams) updateObj["gender_id"] = reqParams["gender_id"]
   if ("gender_name" in reqParams) updateObj["gender_name"] = reqParams["gender_name"]
   if ("about" in reqParams) updateObj["about"] = reqParams["about"]
@@ -11,6 +13,15 @@ exports.updateUser = async (reqParams) => {
   updateObj["updated_at"] = new Date()
   const whr = { "_id": mongoObjId(reqParams["user_id"]) }
   const result = await mongoQuery.updateOne(USERS, whr, updateObj)
+  return result
+ } catch (error) {
+  throw error
+ }
+}
+
+const checkUsername = async (username) => {
+ try {
+  const result = await mongoQuery.getDetails(USERS, [{ $match: { username } }])
   return result
  } catch (error) {
   throw error
