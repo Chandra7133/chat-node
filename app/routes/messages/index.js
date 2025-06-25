@@ -33,4 +33,18 @@ router.post("/chat", [
  }
 })
 
+router.post("/dashboard", [
+ check("user_id").isAlphanumeric().isLength({ min: 24 }).withMessage('Invalid sender id')
+ ], async (req, res, next) => {
+ try {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+   return res.status(VALIDATION_ERROR_CODE).json({ errors: errors.array() });
+  }
+  await msgCtrl.dashBoard(req, res)
+ } catch (error) {
+  res.status(SERVER_ERROR_CODE).json({ message: error.message });
+ }
+})
+
 module.exports = router;
