@@ -38,14 +38,11 @@ exports.chat = async (reqParams) => {
 
 exports.dashBoard = async (reqParams) => {
  try {
-  let user_id = mongoObjId(reqParams['user_id']);
-  let pipeline1 = [
-   { $match: { user_id } },
-   { $project: { "_id": 0, "user_id": 0 } }
-  ]
-  const friendsList = await mongoQuery.getDetails(FRIENDS, pipeline1);
-  let friendsIds = friendsList[0]['friends'];
-  let pipeline2 = [
+  const user_id = mongoObjId(reqParams["user_id"])
+  const pipeline1 = [{ $match: { user_id } }, { $project: { "_id": 0, "user_id": 0 } }]
+  const friendsList = await mongoQuery.getDetails(FRIENDS, pipeline1)
+  const friendsIds = friendsList[0]["friends"]
+  const pipeline2 = [
    {
     $match: {
      $or: [
@@ -114,8 +111,8 @@ exports.dashBoard = async (reqParams) => {
     }
    }
   ]
-  const dashBoardData = await mongoQuery.getDetails(MESSAGES, pipeline2)
-  return dashBoardData
+  const result = await mongoQuery.getDetails(MESSAGES, pipeline2)
+  return result
  } catch (error) {
   throw error
  }

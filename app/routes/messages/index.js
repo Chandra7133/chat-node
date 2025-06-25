@@ -34,10 +34,8 @@ router.post("/dashboard", [
 ], async (req, res, next) => {
  try {
   const errors = validationResult(req)
-  if (!errors.isEmpty()) {
-   return res.status(VALIDATION_ERROR_CODE).json({ errors: errors.array() })
-  }
-  await msgCtrl.dashBoard(req, res)
+  if (!errors.isEmpty()) return res.status(VALIDATION_ERROR_CODE).json({ errors: errors.array() })
+  msgCtrl.dashBoard(req, res)
  } catch (error) {
   res.status(SERVER_ERROR_CODE).json({ message: error.message })
  }
