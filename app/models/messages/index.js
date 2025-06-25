@@ -1,12 +1,12 @@
-const { mongoQuery, mongoObjId } = require("@cs7player/login-lib");
+const { mongoQuery, mongoObjId } = require("@cs7player/login-lib")
 
 exports.messages = async (reqParams) => {
  try {
-  const sender_id = mongoObjId(reqParams['sender_id']);
-  const receiver_id = mongoObjId(reqParams['receiver_id']);
-  const msg = reqParams.msg;
-  const is_seen = 0;
-  const created_at = new Date();
+  const sender_id = mongoObjId(reqParams["sender_id"])
+  const receiver_id = mongoObjId(reqParams["receiver_id"])
+  const msg = reqParams.msg
+  const is_seen = 0
+  const created_at = new Date()
   const result = await mongoQuery.insertOne(MESSAGES, { sender_id, receiver_id, msg, is_seen, created_at })
   return result
  } catch (error) {
@@ -16,14 +16,14 @@ exports.messages = async (reqParams) => {
 
 exports.chat = async (reqParams) => {
  try {
-  const user_id = mongoObjId(reqParams['user_id']);
-  const friend_id = mongoObjId(reqParams['friend_id']);
-  let pipeline = [
+  const user_id = mongoObjId(reqParams["user_id"])
+  const friend_id = mongoObjId(reqParams["friend_id"])
+  const pipeline = [
    {
     $match: {
      $or: [
       { $and: [{ "sender_id": user_id }, { "receiver_id": friend_id }] },
-      { $and: [{ "receiver_id": user_id }, { "sender_id": friend_id }] },
+      { $and: [{ "receiver_id": user_id }, { "sender_id": friend_id }] }
      ]
     }
    },

@@ -96,7 +96,7 @@ exports.accept = async (reqParams) => {
   const user_id = mongoObjId(data[0]["receiver_id"])
   const friend_id = mongoObjId(data[0]["sender_id"])
   const result = await mongoQuery.updateOne(FRIENDS, { user_id }, { $addToSet: { friends: friend_id } }, 0)
-  await mongoQuery.updateOne(FRIENDS, { "user_id": friend_id }, { $addToSet: { friends: friend_id } }, 0)
+  await mongoQuery.updateOne(FRIENDS, { "user_id": friend_id }, { $addToSet: { friends: user_id } }, 0)
   await mongoQuery.deleteOne(INVITATIONS, { _id })
   return result || []
  } catch (error) {
