@@ -35,3 +35,88 @@ exports.chat = async (reqParams) => {
   throw error
  }
 }
+
+exports.dashBoard = async (reqParams) => {
+ try {
+  let user_id = mongoObjId(reqParams['user_id']);
+  let pipeline1 = [
+   { $match: { user_id } },
+   { $project: { "_id": 0, "user_id": 0 } }
+  ]
+  const friendsList = await mongoQuery.getDetails(FRIENDS, pipeline1);
+  let friendsIds = friendsList[0]['friends'];
+  let pipeline2 = [
+   {
+    $match: {
+     $or: [
+      { $and: [{ "sender_id": user_id }, { "receiver_id": { $in: friendsIds } }] },
+      { $and: [{ "receiver_id": user_id }, { "sender_id": { $in: friendsIds } }] },
+     ]
+    }
+   },
+   {
+    $addFields: {
+     friend_id: {
+      $cond: [
+       { $eq: ["$sender_id", user_id] },
+       "$receiver_id",
+       "$sender_id"
+      ]
+     }
+    }
+   },
+   {
+    $sort: { created_at: -1 }
+   },
+   {
+    $group: {
+     _id: "$friend_id",
+     last_message: { $first: "$$ROOT" },
+     unseen_count: {
+      $sum: {
+       $cond: [
+        {
+         $and: [
+          { $eq: ["$receiver_id", user_id] },
+          { $eq: ["$is_seen", 0] }
+         ]
+        },
+        1,
+        0
+       ]
+      }
+     }
+    }
+   },
+   {
+    $lookup: {
+     from: "users",
+     localField: "_id",
+     foreignField: "_id",
+     as: "friend_info"
+    }
+   },
+   {
+    $unwind: "$friend_info"
+   },
+   {
+    $project: {
+     _id: 0,
+     friend_id: "$_id",
+     last_message: {
+      msg: "$last_message.msg",
+      created_at: "$last_message.created_at",
+      sender_id: "$last_message.sender_id"
+     },
+     unseen_count: 1,
+     username: "$friend_info.username",
+     gender_id: "$friend_info.gender_id"
+    }
+   }
+  ]
+  const dashBoardData = await mongoQuery.getDetails(MESSAGES, pipeline2)
+  return dashBoardData
+ } catch (error) {
+  throw error
+ }
+}
