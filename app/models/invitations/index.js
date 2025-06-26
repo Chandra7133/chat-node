@@ -2,7 +2,7 @@ const { mongoQuery, mongoObjId } = require("@cs7player/login-lib")
 
 exports.invite = async (reqParams) => {
  try {
-  const sender_id = mongoObjId(reqParams["sender_id"])
+  const sender_id = mongoObjId(reqParams["user_id"])
   const receiver_id = mongoObjId(reqParams["receiver_id"])
   created_at = new Date()
   const result = await mongoQuery.insertOne(INVITATIONS, { sender_id, receiver_id, created_at })

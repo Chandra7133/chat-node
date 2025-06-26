@@ -3,8 +3,7 @@ const { check, validationResult } = require("express-validator")
 const msgCtrl = require("../../controllers/messages")
 
 router.post("/msg", [
- check("sender_id").isAlphanumeric().isLength({ min: 24 }).withMessage("Invalid sender id"),
- check("receiver_id").isAlphanumeric().isLength({ min: 24 }).withMessage("Invalid receiver id"),
+ check("receiver_id").isMongoId().withMessage("Invalid receiver id"),
  check("msg").trim().isString().isLength({ min: 1 }).withMessage("Invalid Message")
 ], async (req, res, next) => {
  try {
@@ -17,8 +16,7 @@ router.post("/msg", [
 })
 
 router.post("/chat", [
- check("user_id").isAlphanumeric().isLength({ min: 24 }).withMessage("Invalid user id"),
- check("friend_id").isAlphanumeric().isLength({ min: 24 }).withMessage("Invalid friend id")
+ check("friend_id").isMongoId().withMessage("Invalid friend id")
 ], async (req, res, next) => {
  try {
   const errors = validationResult(req)
@@ -29,8 +27,21 @@ router.post("/chat", [
  }
 })
 
+router.post("/seen", [
+ check("friend_id").isMongoId().withMessage("Invalid friend id"),
+ check("msg_ids").isArray().withMessage("msg_ids must be an array"),
+ check("msg_ids.*").isMongoId().withMessage("Invalid msg id"),
+], async (req, res, next) => {
+ try {
+  const errors = validationResult(req)
+  if (!errors.isEmpty()) return res.status(VALIDATION_ERROR_CODE).json({ errors: errors.array() })
+  msgCtrl.seen(req, res)
+ } catch (error) {
+  res.status(SERVER_ERROR_CODE).json({ message: error.message })
+ }
+})
+
 router.post("/dashboard", [
- check("user_id").isAlphanumeric().isLength({ min: 24 }).withMessage("Invalid sender id")
 ], async (req, res, next) => {
  try {
   const errors = validationResult(req)

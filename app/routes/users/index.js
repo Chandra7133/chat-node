@@ -2,9 +2,7 @@ const router = require("express").Router()
 const { check, validationResult } = require("express-validator")
 const usersCtrl = require("../../controllers/users")
 
-router.put("/update", [
- check("user_id").isMongoId().withMessage("Invalid user id")
-], (req, res) => {
+router.put("/update", [], (req, res) => {
  try {
   const errors = validationResult(req)
   if (!errors.isEmpty()) return res.status(VALIDATION_ERROR_CODE).json({ errors: errors.array() })
@@ -34,9 +32,7 @@ router.post("/paging", [], (req, res) => {
  }
 })
 
-router.post("/others", [
- check("user_id").isAlphanumeric().isLength({ min: 24 }).withMessage('Invalid user id'),
-], (req, res) => {
+router.post("/others", [], (req, res) => {
  try {
   const errors = validationResult(req)
   if (!errors.isEmpty()) return res.status(VALIDATION_ERROR_CODE).json({ errors: errors.array() })
@@ -46,9 +42,7 @@ router.post("/others", [
  }
 })
 
-router.post("/friends", [
- check("user_id").isAlphanumeric().isLength({ min: 24 }).withMessage('Invalid user id'),
-], (req, res) => {
+router.post("/friends", [], (req, res) => {
  try {
   const errors = validationResult(req)
   if (!errors.isEmpty()) return res.status(VALIDATION_ERROR_CODE).json({ errors: errors.array() })

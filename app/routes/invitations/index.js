@@ -3,8 +3,7 @@ const { check, validationResult } = require('express-validator');
 const invitationsCtrl = require("../../controllers/invitations")
 
 router.post("/", [
- check("sender_id").isAlphanumeric().isLength({ min: 24 }).withMessage('Invalid sender id'),
- check("receiver_id").isAlphanumeric().isLength({ min: 24 }).withMessage('Invalid receiver id')
+ check("receiver_id").isMongoId().withMessage('Invalid receiver id')
 ], async (req, res, next) => {
  try {
   const errors = validationResult(req);
@@ -18,7 +17,6 @@ router.post("/", [
 })
 
 router.post("/sended", [
- check("user_id").isAlphanumeric().isLength({ min: 24 }).withMessage('Invalid user id'),
 ], async (req, res, next) => {
  try {
   const errors = validationResult(req);
@@ -32,7 +30,6 @@ router.post("/sended", [
 })
 
 router.post("/received", [
- check("user_id").isAlphanumeric().isLength({ min: 24 }).withMessage('Invalid user id'),
 ], async (req, res, next) => {
  try {
   const errors = validationResult(req);
@@ -46,7 +43,7 @@ router.post("/received", [
 })
 
 router.post("/accept", [
- check("_id").isAlphanumeric().isLength({ min: 24 }).withMessage('Invalid user id'),
+ check("_id").isMongoId().withMessage('Invalid user id'),
 ], async (req, res, next) => {
  try {
   const errors = validationResult(req);
@@ -60,7 +57,7 @@ router.post("/accept", [
 })
 
 router.post("/decline", [
- check("_id").isAlphanumeric().isLength({ min: 24 }).withMessage('Invalid user id'),
+ check("_id").isMongoId().withMessage('Invalid user id'),
 ], async (req, res, next) => {
  try {
   const errors = validationResult(req);
@@ -74,8 +71,7 @@ router.post("/decline", [
 })
 
 router.post("/unfriend", [
- check("user_id").isAlphanumeric().isLength({ min: 24 }).withMessage('Invalid user id'),
- check("friend_id").isAlphanumeric().isLength({ min: 24 }).withMessage('Invalid friend id')
+ check("friend_id").isMongoId().withMessage('Invalid friend id')
 ], async (req, res, next) => {
  try {
   const errors = validationResult(req);
