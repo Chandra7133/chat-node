@@ -1,4 +1,5 @@
 const router = require("express").Router()
+const { check, validationResult } = require("express-validator")
 const usersCtrl = require("../../controllers/users")
 
 router.put("/update", [], (req, res) => {
