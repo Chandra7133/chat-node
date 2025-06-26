@@ -112,6 +112,9 @@ exports.dashBoard = async (reqParams) => {
      username: "$friend_info.username",
      gender_id: "$friend_info.gender_id"
     }
+   },
+   {
+    $sort: { "last_message.created_at": -1 }
    }
   ]
   const result = await mongoQuery.getDetails(MESSAGES, pipeline2)
