@@ -30,19 +30,9 @@ exports.chat = async (reqParams) => {
    { $sort: { created_at: -1 } }
   ]
   const result = await mongoQuery.getDetails(MESSAGES, pipeline)
-  return result
- } catch (error) {
-  throw error
- }
-}
-
-exports.seen = async (reqParams) => {
- try {
-  const user_id = mongoObjId(reqParams["user_id"])
-  const friend_id = mongoObjId(reqParams["friend_id"])
   const filter = { receiver_id: user_id, sender_id: friend_id, is_seen: 0 }
   const update = { is_seen: 1 }
-  const result = await mongoQuery.updateMany(MESSAGES, filter, update)
+  await mongoQuery.updateMany(MESSAGES, filter, update)
   return result
  } catch (error) {
   throw error

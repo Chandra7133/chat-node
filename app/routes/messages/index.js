@@ -27,20 +27,6 @@ router.post("/chat", [
  }
 })
 
-router.post("/seen", [
- check("friend_id").isMongoId().withMessage("Invalid friend id"),
- check("msg_ids").isArray().withMessage("msg_ids must be an array"),
- check("msg_ids.*").isMongoId().withMessage("Invalid msg id"),
-], (req, res, next) => {
- try {
-  const errors = validationResult(req)
-  if (!errors.isEmpty()) return res.status(VALIDATION_ERROR_CODE).json({ errors: errors.array() })
-  msgCtrl.seen(req, res)
- } catch (error) {
-  res.status(SERVER_ERROR_CODE).json({ message: error.message })
- }
-})
-
 router.post("/dashboard", [], (req, res, next) => {
  try {
   const errors = validationResult(req)
