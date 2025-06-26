@@ -47,7 +47,6 @@ exports.friends = async (reqParams) => {
      as: "joinedData"
     }
    },
-
    {
     $addFields: {
      joinedData: {
