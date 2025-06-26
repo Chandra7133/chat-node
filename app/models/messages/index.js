@@ -4,7 +4,7 @@ exports.messages = async (reqParams) => {
  try {
   const sender_id = mongoObjId(reqParams["user_id"])
   const receiver_id = mongoObjId(reqParams["receiver_id"])
-  const msg = reqParams.msg
+  const msg = reqParams["msg"]
   const is_seen = 0
   const created_at = new Date()
   const result = await mongoQuery.insertOne(MESSAGES, { sender_id, receiver_id, msg, is_seen, created_at })
@@ -40,9 +40,9 @@ exports.seen = async (reqParams) => {
  try {
   const user_id = mongoObjId(reqParams["user_id"])
   const friend_id = mongoObjId(reqParams["friend_id"])
-  const filter = {receiver_id: user_id, sender_id: friend_id, is_seen : 0};
-  const update = { is_seen: 1 };
-  const result = await mongoQuery.updateMany(MESSAGES,filter,update )
+  const filter = { receiver_id: user_id, sender_id: friend_id, is_seen: 0 }
+  const update = { is_seen: 1 }
+  const result = await mongoQuery.updateMany(MESSAGES, filter, update)
   return result
  } catch (error) {
   throw error

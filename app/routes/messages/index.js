@@ -5,7 +5,7 @@ const msgCtrl = require("../../controllers/messages")
 router.post("/msg", [
  check("receiver_id").isMongoId().withMessage("Invalid receiver id"),
  check("msg").trim().isString().isLength({ min: 1 }).withMessage("Invalid Message")
-], async (req, res, next) => {
+], (req, res, next) => {
  try {
   const errors = validationResult(req)
   if (!errors.isEmpty()) return res.status(VALIDATION_ERROR_CODE).json({ errors: errors.array() })
@@ -17,7 +17,7 @@ router.post("/msg", [
 
 router.post("/chat", [
  check("friend_id").isMongoId().withMessage("Invalid friend id")
-], async (req, res, next) => {
+], (req, res, next) => {
  try {
   const errors = validationResult(req)
   if (!errors.isEmpty()) return res.status(VALIDATION_ERROR_CODE).json({ errors: errors.array() })
@@ -31,7 +31,7 @@ router.post("/seen", [
  check("friend_id").isMongoId().withMessage("Invalid friend id"),
  check("msg_ids").isArray().withMessage("msg_ids must be an array"),
  check("msg_ids.*").isMongoId().withMessage("Invalid msg id"),
-], async (req, res, next) => {
+], (req, res, next) => {
  try {
   const errors = validationResult(req)
   if (!errors.isEmpty()) return res.status(VALIDATION_ERROR_CODE).json({ errors: errors.array() })
@@ -41,8 +41,7 @@ router.post("/seen", [
  }
 })
 
-router.post("/dashboard", [
-], async (req, res, next) => {
+router.post("/dashboard", [], (req, res, next) => {
  try {
   const errors = validationResult(req)
   if (!errors.isEmpty()) return res.status(VALIDATION_ERROR_CODE).json({ errors: errors.array() })

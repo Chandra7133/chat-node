@@ -1,8 +1,8 @@
-const loginLib = require("@cs7player/login-lib");
-const express = require("express");
-const cors = require("cors");
-const app = express();
-require("./app/utils/constants");
+const loginLib = require("@cs7player/login-lib")
+const express = require("express")
+const cors = require("cors")
+const app = express()
+require("./app/utils/constants")
 
 const allow_origns = ALLOW_ORIGNS
 const corsOptions = {
@@ -15,6 +15,7 @@ const corsOptions = {
  }
 }
 app.use(cors(corsOptions))
+
 app.use(express.json()) // for parsing application/json
 app.use(express.urlencoded({ extended: true })) // For form data
 app.use(loginLib.jwt.verifyToken) // verify token

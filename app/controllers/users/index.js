@@ -4,7 +4,7 @@ exports.updateUser = async (req, res) => {
  try {
   const reqParams = req["body"] || {}
   const result = await usersMdl.updateUser(reqParams)
-  res.status(result["status"] || SUCCESS_CODE).json({ "status": result["acknowledged"] || false, "msg": result["msg"] || "User Details Updated Successfully." })
+  res.status(result["status"] || SUCCESS_CODE).json({ "status": result["acknowledged"] || false, "msg": result["msg"] || "Profile updated successfully." })
  } catch (error) {
   res.status(SERVER_ERROR_CODE).json({ status: false, msg: SERVER_ERROR_MESSAGE })
  }
@@ -28,7 +28,7 @@ exports.paging = async (req, res) => {
  } catch (error) {
   res.status(SERVER_ERROR_CODE).json({ status: false, msg: SERVER_ERROR_MESSAGE })
  }
-} 
+}
 
 exports.others = async (req, res) => {
  try {
@@ -38,7 +38,7 @@ exports.others = async (req, res) => {
  } catch (error) {
   res.status(SERVER_ERROR_CODE).json({ status: false, msg: SERVER_ERROR_MESSAGE })
  }
-} 
+}
 
 exports.friendsList = async (req, res) => {
  try {

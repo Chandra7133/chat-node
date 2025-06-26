@@ -25,9 +25,8 @@ exports.sended = async (reqParams) => {
      as: "joinedData"
     }
    },
+   { $unwind: "$joinedData" },
    {
-    $unwind: "$joinedData"
-   }, {
     $addFields: {
      "user_id": "$_id",
      "username": "$joinedData.username",
@@ -63,9 +62,8 @@ exports.received = async (reqParams) => {
      as: "joinedData"
     }
    },
+   { $unwind: "$joinedData" },
    {
-    $unwind: "$joinedData"
-   }, {
     $addFields: {
      "_id": "$_id",
      "user_id": "$joinedData._id",

@@ -52,7 +52,7 @@ exports.getUsers = async (reqParams) => {
 
 exports.paging = async (reqParams) => {
  try {
-  const { page = 1, limit = 10, username, isNeedPwd = true } = reqParams
+  const { page = 1, limit = 10, isNeedPwd = true } = reqParams
   const skip = (page - 1) * limit
   let searchKey = ""
   if ("username" in reqParams) searchKey = reqParams["username"].trim()

@@ -8,9 +8,9 @@ exports.signUp = async (reqParams) => {
  try {
   let { username, email, gender_id, gender_name, password } = reqParams
   const usernameDetails = await checkUsername(username)
-  if (usernameDetails.length > 0) return { "status": DUPLICATE_ENTRY_CODE, "msg": "Username already Exists!!!" }
+  if (usernameDetails.length > 0) return { "status": DUPLICATE_ENTRY_CODE, "msg": "Username already taken" }
   const emailDetails = await checkEmail(email)
-  if (emailDetails.length > 0) return { "status": DUPLICATE_ENTRY_CODE, "msg": "Email alreadt Exists!!!" }
+  if (emailDetails.length > 0) return { "status": DUPLICATE_ENTRY_CODE, "msg": "Email already taken" }
   password = await pbkdf.hashPassword(password)
   created_at = new Date()
   is_verified = 0
@@ -31,7 +31,7 @@ exports.forgetPassword = async (reqParams) => {
  try {
   let { email, password } = reqParams
   const userData = await checkEmail(email)
-  if (userData.length == 0) return { "status": NOT_FOUND_CODE, "msg": "No account found!!!" }
+  if (userData.length == 0) return { "status": NOT_FOUND_CODE, "msg": "No account found." }
   const _id = userData[0]["_id"]
   password = await pbkdf.hashPassword(password)
   const result = await mongoQuery.updateOne(USERS, { _id }, { password })
@@ -46,7 +46,7 @@ exports.login = async (reqParams) => {
  try {
   const { email, password } = reqParams
   const userData = await checkEmail(email)
-  if (userData.length == 0) return { "status": NOT_FOUND_CODE, "msg": "No account found!!!" }
+  if (userData.length == 0) return { "status": NOT_FOUND_CODE, "msg": "No account found." }
   userObj = userData[0]
   const userPwd = userObj["password"]
   const checkPwdStatus = await pbkdf.checkPassword(password, userPwd)
@@ -55,7 +55,7 @@ exports.login = async (reqParams) => {
   delete userObj["_id"]
   delete userObj["password"]
   const tokenRes = await jwt.generateToken(userObj)
-  if (tokenRes) return { "msg": "Login successful", "data": userObj, "token": tokenRes }
+  if (tokenRes) return { "msg": "Login successful.", "data": userObj, "token": tokenRes }
   else return { "msg": tokenRes["msg"], "status": tokenRes["status_code"] }
  } catch (error) {
   throw error
@@ -68,8 +68,8 @@ exports.verify = async (requestBody) => {
   const mail = requestBody["mail"]
   if (otp == otpJson[mail]) {
    delete otpJson[mail]
-   return { status: true, msg: "Verification Successfully!!!" }
-  } else return { status: true, msg: "Verification Failed!!!" }
+   return { status: true, msg: "Email verified successfully." }
+  } else return { status: true, msg: "Invalid OTP. Please check and try again." }
  } catch (error) {
   return { status: false, data: error }
  }
