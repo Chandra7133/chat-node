@@ -7,7 +7,7 @@ exports.create = async (reqParams) => {
   const members = [created_by];
   const admins = [created_by];
   const created_at = new Date();
-  const result = await mongoQuery.insertOne(GROUPS, { groupname,admins, members, created_by, created_at })
+  const result = await mongoQuery.insertOne(GROUPS, { groupname, admins, members, created_by, created_at })
   return result || []
  } catch (error) {
   throw error
@@ -21,10 +21,10 @@ exports.add = async (reqParams) => {
   const members = reqParams["friends_ids"].map(m => mongoObjId(m));
   const admins = reqParams["admin_ids"].map(m => mongoObjId(m));
   let update = { members };
-  if(isAdmin == 1){
+  if (isAdmin == 1) {
    update = { admins };
   }
-  const result = await mongoQuery.updateOne(GROUPS,{"_id":group_id},update);
+  const result = await mongoQuery.updateOne(GROUPS, { "_id": group_id }, update);
   return result || []
  } catch (error) {
   throw error
@@ -35,20 +35,61 @@ exports.friends = async (reqParams) => {
  try {
   const group_id = mongoObjId(reqParams["group_id"]);
   const user_id = mongoObjId(reqParams["user_id"]);
-  const friends_arr = await mongoQuery.getDetails(FRIENDS, [{ $match: { user_id } }, { $project: { "_id": 0, "user_id": 0 } }])
-  const FriendIds = friends_arr[0]?.friends || [];
+  const member_arr = await mongoQuery.getDetails(GROUPS, [{ $match: { "_id": group_id } }])
+  const memberIds = member_arr[0]?.members || [];
   let pipeline = [
-   { $match: { "_id" : group_id } },
+   { $match: { user_id } },
    {
-    $$lookup: {
+    $lookup: {
      from: USERS,
-     localField: "members",
+     localField: "friends",
      foreignField: "_id",
      as: "joinedData"
     }
+   },
+
+   {
+    $addFields: {
+     joinedData: {
+      $map: {
+       input: "$joinedData",
+       as: "user",
+       in: {
+        $mergeObjects: [
+         "$$user",
+         {
+          is_add: {
+           $in: ["$$user._id", memberIds]
+          }
+         }
+        ]
+       }
+      }
+     }
+    }
+   },
+   { $unwind: "$joinedData" },
+   {
+    $project: {
+     "_id": "$joinedData._id",
+     "username": "$joinedData.username",
+     "gender_id": "$joinedData.gender_id",
+     "id_add": "$joinedData.is_add"
+    }
    }
   ]
-  const result = await mongoQuery.getDetails(GROUPS, pipeline)
+  const result = await mongoQuery.getDetails(FRIENDS, pipeline)
+  return result || []
+ } catch (error) {
+  throw error
+ }
+}
+
+exports.leave = async (reqParams) => {
+ try {
+  const group_id = mongoObjId(reqParams["group_id"]);
+  const user_id = mongoObjId(reqParams["user_id"]);
+  const result = await mongoQuery.updateOne(GROUPS, { "_id": group_id }, { $pull: { members: user_id, admins : user_id} }, 0)
   return result || []
  } catch (error) {
   throw error

@@ -4,12 +4,10 @@ const groupsCtrl = require("../../controllers/groups")
 
 router.post("/create", [
  check("groupname").trim().isString().isLength({ min: 4 }).withMessage("Invalid groupname")
-], async (req, res, next) => {
+], (req, res, next) => {
  try {
   const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-   return res.status(VALIDATION_ERROR_CODE).json({ errors: errors.array() });
-  }
+  if (!errors.isEmpty()) return res.status(VALIDATION_ERROR_CODE).json({ errors: errors.array() });
   groupsCtrl.create(req, res)
  } catch (error) {
   res.status(SERVER_ERROR_CODE).json({ message: error.message });
@@ -22,12 +20,10 @@ router.put("/add", [
  check("friends_ids.*").isMongoId().withMessage("Invalid friend id"),
  check("admin_ids").isArray().withMessage("admin_ids must be an array"),
  check("admin_ids.*").isMongoId().withMessage("Invalid admin id"),
-], async (req, res, next) => {
+], (req, res, next) => {
  try {
   const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-   return res.status(VALIDATION_ERROR_CODE).json({ errors: errors.array() });
-  }
+  if (!errors.isEmpty()) return res.status(VALIDATION_ERROR_CODE).json({ errors: errors.array() });
   groupsCtrl.add(req, res)
  } catch (error) {
   res.status(SERVER_ERROR_CODE).json({ message: error.message });
@@ -36,13 +32,23 @@ router.put("/add", [
 
 router.post("/friends", [
  check("group_id").isMongoId().withMessage("Invalid group_id"),
-], async (req, res, next) => {
+], (req, res, next) => {
  try {
   const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-   return res.status(VALIDATION_ERROR_CODE).json({ errors: errors.array() });
-  }
+  if (!errors.isEmpty()) return res.status(VALIDATION_ERROR_CODE).json({ errors: errors.array() });
   groupsCtrl.friends(req, res)
+ } catch (error) {
+  res.status(SERVER_ERROR_CODE).json({ message: error.message });
+ }
+})
+
+router.put("/leave", [
+ check("group_id").isMongoId().withMessage("Invalid group_id"),
+], (req, res, next) => {
+ try {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) return res.status(VALIDATION_ERROR_CODE).json({ errors: errors.array() });
+  groupsCtrl.leave(req, res)
  } catch (error) {
   res.status(SERVER_ERROR_CODE).json({ message: error.message });
  }
