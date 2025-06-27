@@ -77,3 +77,26 @@ exports.dashboard = async (reqParams) => {
   throw error
  }
 }
+
+exports.update = async (reqParams) => {
+ try {
+  const updateObj = {}
+  if ("msg" in reqParams) updateObj["msg"] = reqParams["msg"]
+  updateObj["created_at"] = new Date()
+  const whr = { "_id": mongoObjId(reqParams["group_msg_id"]) }
+  const result = await mongoQuery.updateOne(GROUPS_MSG, whr, updateObj)
+  return result || []
+ } catch (error) {
+  throw error
+ }
+}
+
+exports.delete = async (reqParams) => {
+ try {
+  const _id = mongoObjId(reqParams["group_msg_id"])
+  const result = await mongoQuery.deleteOne(GROUPS_MSG, { _id })
+  return result || []
+ } catch (error) {
+  throw error
+ }
+}
