@@ -37,4 +37,27 @@ router.post("/dashboard", [], (req, res, next) => {
  }
 })
 
+router.post("/update", [
+ check("msg_id").isMongoId().withMessage("Invalid Message Id"),
+], (req, res, next) => {
+ try {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) return res.status(VALIDATION_ERROR_CODE).json({ errors: errors.array() });
+  msgCtrl.update(req, res)
+ } catch (error) {
+  res.status(SERVER_ERROR_CODE).json({ message: error.message });
+ }
+})
+
+router.post("/delete", [
+ check("msg_id").isMongoId().withMessage("Invalid Message Id"),
+], (req, res, next) => {
+ try {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) return res.status(VALIDATION_ERROR_CODE).json({ errors: errors.array() });
+  msgCtrl.delete(req, res)
+ } catch (error) {
+  res.status(SERVER_ERROR_CODE).json({ message: error.message });
+ }
+})
 module.exports = router

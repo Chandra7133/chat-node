@@ -39,3 +39,23 @@ exports.leave = async (req, res) => {
   res.status(SERVER_ERROR_CODE).json({ "status": false, "msg": SERVER_ERROR_MESSAGE })
  }
 }
+
+exports.update = async (req, res) => {
+ try {
+  const reqParams = req["body"] || {}
+  const result = await groupsMdl.update(reqParams)
+  res.status(result["status"] || SUCCESS_CODE).json({ "status": true, "msg": UPDATE_SUCCESS  })
+ } catch (error) {
+  res.status(SERVER_ERROR_CODE).json({ "status": false, "msg": SERVER_ERROR_MESSAGE })
+ }
+}
+
+exports.delete = async (req, res) => {
+ try {
+  const reqParams = req["body"] || {}
+  const result = await groupsMdl.delete(reqParams)
+  res.status(result["status"] || SUCCESS_CODE).json({ "status": true, "msg": DELETE_SUCCESS })
+ } catch (error) {
+  res.status(SERVER_ERROR_CODE).json({ "status": false, "msg": SERVER_ERROR_MESSAGE })
+ }
+}
